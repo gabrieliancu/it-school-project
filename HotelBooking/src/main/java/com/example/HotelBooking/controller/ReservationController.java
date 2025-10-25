@@ -54,7 +54,7 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.findReservationsByUser(userId));
     }
 
-    // ✅ GET – Detalii despre o rezervare specifică
+    // ✅ GET – Detalii despre 0 rezervare specifică
     @GetMapping("/{id}")
     public ResponseEntity<ReservationResponseDto> getById(@PathVariable Long id) {
         return ResponseEntity.ok(reservationService.findById(id));
