@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface HotelRepository extends JpaRepository<Hotel, Long> {
-    public Optional<Hotel> findByNameAndLocation(String name, String location);
     List<Hotel> findByLocation(String location);
     List<Hotel> findByRatingGreaterThanEqual(Double rating);
 }

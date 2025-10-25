@@ -26,6 +26,7 @@ public class UserServiceImplementation implements UserService {
         User user = new User();
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
+        user.setPhone(dto.getPhone());
 
         return userRepository.save(user);
     }
@@ -52,6 +53,7 @@ public class UserServiceImplementation implements UserService {
 
         if (dto.getName() != null) user.setName(dto.getName());
         if (dto.getEmail() != null) user.setEmail(dto.getEmail());
+        if (dto.getPhone() != null) user.setPhone(dto.getPhone());
 
         return userRepository.save(user);
     }

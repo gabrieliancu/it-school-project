@@ -9,8 +9,6 @@ import java.util.Optional;
 public interface HotelService {
     List<Hotel> findAllHotels();
 
-    Optional<Hotel> findByNameAndLocation(String name, String location);
-
     List<Hotel> findByLocation(String location);
 
     List<Hotel> findByRatingGreaterThanEqual(Double rating);

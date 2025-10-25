@@ -22,14 +22,6 @@ public class HotelController {
         return ResponseEntity.ok(hotelService.findAllHotels());
     }
 
-    // ✅ GET – hotel după id
-    @GetMapping("/{id}")
-    public ResponseEntity<Hotel> getHotelById(@PathVariable Long id) {
-        return hotelService.findByNameAndLocation("", "") // dummy; vom face byId separat în service dacă vrei
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
     // ✅ GET – hoteluri dintr-o locație
     @GetMapping("/location/{location}")
     public ResponseEntity<List<Hotel>> getHotelsByLocation(@PathVariable String location) {

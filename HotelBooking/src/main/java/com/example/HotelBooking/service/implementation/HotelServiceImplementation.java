@@ -22,11 +22,6 @@ public class HotelServiceImplementation implements HotelService {
     }
 
     @Override
-    public Optional<Hotel> findByNameAndLocation(String name, String location) {
-        return hotelRepository.findByNameAndLocation(name, location);
-    }
-
-    @Override
     public List<Hotel> findByLocation(String location) {
         return hotelRepository.findByLocation(location);
     }
