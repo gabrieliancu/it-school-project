@@ -11,75 +11,90 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.List;
 
 @Service
 public class RoomServiceImplementation implements RoomService {
 
-    @Autowired
-    private RoomRepository roomRepository;
+    private final RoomRepository roomRepository;
+    private final HotelRepository hotelRepository;
 
     @Autowired
-    private HotelRepository hotelRepository;
+    public RoomServiceImplementation(RoomRepository roomRepository, HotelRepository hotelRepository) {
+        this.roomRepository = roomRepository;
+        this.hotelRepository = hotelRepository;
+    }
 
+    // 🔹 Creare cameră nouă
     @Override
     public Room createRoom(RoomDto dto) {
         Hotel hotel = hotelRepository.findById(dto.getHotelId())
-                .orElseThrow(() -> new RuntimeException("Hotel not found"));
+                .orElseThrow(() -> new RuntimeException("Hotel with ID " + dto.getHotelId() + " not found"));
 
         Room room = new Room();
         room.setRoomNumber(dto.getRoomNumber());
         room.setFloor(dto.getFloor());
         room.setHotel(hotel);
+        room.setStatus(dto.getStatus() != null ? dto.getStatus() : RoomStatus.AVAILABLE);
 
-        // conversie status din text (DTO) în enum
-        if (dto.getStatus() != null) {
-            room.setStatus(RoomStatus.valueOf(dto.getStatus().toUpperCase()));
-        } else {
-            room.setStatus(RoomStatus.AVAILABLE);
+        return roomRepository.save(room);
+    }
+
+    // 🔹 Actualizare cameră
+    @Override
+    public Room updateRoom(Long id, RoomDto dto) {
+        Room room = roomRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Room with ID " + id + " not found"));
+
+        if (dto.getRoomNumber() != null)
+            room.setRoomNumber(dto.getRoomNumber());
+
+        if (dto.getFloor() != null)
+            room.setFloor(dto.getFloor());
+
+        if (dto.getStatus() != null)
+            room.setStatus(dto.getStatus());
+
+        if (dto.getHotelId() != null) {
+            Hotel hotel = hotelRepository.findById(dto.getHotelId())
+                    .orElseThrow(() -> new RuntimeException("Hotel with ID " + dto.getHotelId() + " not found"));
+            room.setHotel(hotel);
         }
 
         return roomRepository.save(room);
     }
 
+    // 🔹 Ștergere cameră
+    @Override
+    public void deleteRoom(Long id) {
+        if (!roomRepository.existsById(id)) {
+            throw new RuntimeException("Room with ID " + id + " not found");
+        }
+        roomRepository.deleteById(id);
+    }
+
+    // 🔹 Toate camerele
     @Override
     public List<Room> findAllRooms() {
         return roomRepository.findAll();
     }
 
+    // 🔹 Căutare cameră după ID
     @Override
     public Room findRoomById(Long id) {
         return roomRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Room not found"));
+                .orElseThrow(() -> new RuntimeException("Room with ID " + id + " not found"));
     }
 
+    // 🔹 Toate camerele dintr-un hotel
     @Override
     public List<Room> findRoomsByHotel(Long hotelId) {
         return roomRepository.findByHotelId(hotelId);
     }
 
+    // 🔹 Toate camerele dintr-un hotel după status
     @Override
     public List<Room> findRoomsByHotelAndStatus(Long hotelId, RoomStatus status) {
         return roomRepository.findByHotelIdAndStatus(hotelId, status);
-    }
-
-    @Override
-    public Room updateRoom(Long id, RoomDto dto) {
-        Room room = roomRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Room not found"));
-
-        if (dto.getRoomNumber() != null) room.setRoomNumber(dto.getRoomNumber());
-        if (dto.getFloor() != null) room.setFloor(dto.getFloor());
-        if (dto.getStatus() != null)
-            room.setStatus(RoomStatus.valueOf(dto.getStatus().toUpperCase()));
-
-        return roomRepository.save(room);
-    }
-
-    @Override
-    public void deleteRoom(Long id) {
-        if (!roomRepository.existsById(id)) {
-            throw new RuntimeException("Room not found");
-        }
-        roomRepository.deleteById(id);
     }
 }

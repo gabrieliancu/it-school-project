@@ -1,6 +1,7 @@
 package com.example.HotelBooking.model.entities;
 
 import com.example.HotelBooking.model.enums.RoomStatus;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Entity
 @Table(name = "rooms")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Room {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,8 +27,4 @@ public class Room {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hotel_id")
     private Hotel hotel;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_type_id")
-    private RoomType roomType;
 }

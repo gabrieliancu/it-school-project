@@ -15,27 +15,27 @@ import java.util.List;
 public class RoomController {
 
     @Autowired
-    RoomService roomService;
+    private RoomService roomService;
 
-    // ✅ GET - toate camerele
+    // 🔹 GET - toate camerele
     @GetMapping
     public ResponseEntity<List<Room>> getAllRooms() {
         return ResponseEntity.ok(roomService.findAllRooms());
     }
 
-    // ✅ GET - cameră după ID
+    // 🔹 GET - cameră după ID
     @GetMapping("/{id}")
     public ResponseEntity<Room> getRoomById(@PathVariable Long id) {
         return ResponseEntity.ok(roomService.findRoomById(id));
     }
 
-    // ✅ GET - camerele unui hotel
+    // 🔹 GET - camerele unui hotel
     @GetMapping("/hotel/{hotelId}")
     public ResponseEntity<List<Room>> getRoomsByHotel(@PathVariable Long hotelId) {
         return ResponseEntity.ok(roomService.findRoomsByHotel(hotelId));
     }
 
-    // ✅ GET - camerele unui hotel după status (AVAILABLE, OCCUPIED, etc.)
+    // 🔹 GET - camerele unui hotel după status (AVAILABLE, BOOKED etc.)
     @GetMapping("/hotel/{hotelId}/status/{status}")
     public ResponseEntity<List<Room>> getRoomsByHotelAndStatus(
             @PathVariable Long hotelId,
@@ -43,20 +43,19 @@ public class RoomController {
         return ResponseEntity.ok(roomService.findRoomsByHotelAndStatus(hotelId, status));
     }
 
-    // ✅ POST - creare cameră nouă
+    // 🔹 POST - creare cameră
     @PostMapping
     public ResponseEntity<Room> createRoom(@RequestBody RoomDto dto) {
-        Room created = roomService.createRoom(dto);
-        return ResponseEntity.ok(created);
+        return ResponseEntity.ok(roomService.createRoom(dto));
     }
 
-    // ✅ PUT - actualizare cameră
+    // 🔹 PUT - actualizare cameră
     @PutMapping("/{id}")
     public ResponseEntity<Room> updateRoom(@PathVariable Long id, @RequestBody RoomDto dto) {
         return ResponseEntity.ok(roomService.updateRoom(id, dto));
     }
 
-    // ✅ DELETE - ștergere cameră
+    // 🔹 DELETE - ștergere cameră
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteRoom(@PathVariable Long id) {
         roomService.deleteRoom(id);

@@ -10,15 +10,15 @@ public interface RoomService {
 
     Room createRoom(RoomDto dto);
 
-    List<Room> findAllRooms();
+    Room updateRoom(Long id, RoomDto dto);
+
+    void deleteRoom(Long id);
 
     Room findRoomById(Long id);
+
+    List<Room> findAllRooms();
 
     List<Room> findRoomsByHotel(Long hotelId);
 
     List<Room> findRoomsByHotelAndStatus(Long hotelId, RoomStatus status);
-
-    Room updateRoom(Long id, RoomDto dto);
-
-    void deleteRoom(Long id);
 }

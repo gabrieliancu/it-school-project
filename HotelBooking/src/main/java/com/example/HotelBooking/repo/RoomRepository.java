@@ -9,9 +9,5 @@ import java.util.List;
 public interface RoomRepository extends JpaRepository<Room, Long> {
     List<Room> findByHotelId(Long hotelId);
 
-    // camerele disponibile într-un hotel
     List<Room> findByHotelIdAndStatus(Long hotelId, RoomStatus status);
-
-    // camerele de pe un anumit etaj
-    List<Room> findByHotelIdAndFloor(Long hotelId, String floor);
 }
