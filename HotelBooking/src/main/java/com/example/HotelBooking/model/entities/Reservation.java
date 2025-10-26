@@ -44,4 +44,8 @@ public class Reservation {
 
     private ReservationStatus status = ReservationStatus.ONHOLD;
     private LocalDate createdAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "hotel_id")
+    private Hotel hotel;
 }

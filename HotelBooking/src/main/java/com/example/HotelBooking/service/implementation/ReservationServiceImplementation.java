@@ -20,13 +20,10 @@ public class ReservationServiceImplementation implements ReservationService {
 
     @Autowired
     private ReservationRepository reservationRepository;
-
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private RoomRepository roomRepository;
-
     @Autowired
     private RatePlanRepository ratePlanRepository;
 
@@ -44,8 +41,22 @@ public class ReservationServiceImplementation implements ReservationService {
             throw new RuntimeException("No rooms selected");
         }
 
-        // folosim o cameră ca exemplu pentru hotel și tipul de cameră
         Room sampleRoom = rooms.iterator().next();
+
+        // ✅ verifică planul tarifar (ratePlanId)
+        RatePlan selectedPlan = ratePlanRepository.findById(request.getRatePlanId())
+                .orElseThrow(() -> new RuntimeException("Invalid rate plan ID: " + request.getRatePlanId()));
+
+        // 🔒 Verifică dacă planul tarifar aparține aceluiași hotel și tip de cameră
+        if (!selectedPlan.getHotel().getId().equals(sampleRoom.getHotel().getId())) {
+            throw new RuntimeException("❌ Rate plan belongs to another hotel ("
+                    + selectedPlan.getHotel().getName() + ")");
+        }
+
+        if (!selectedPlan.getRoomType().getId().equals(sampleRoom.getRoomType().getId())) {
+            throw new RuntimeException("❌ Rate plan does not match the selected room type ("
+                    + selectedPlan.getRoomType().getName() + ")");
+        }
 
         // ✅ obține doar planurile active pentru perioada cerută
         List<RatePlan> ratePlans = ratePlanRepository.findActiveRatePlansByHotelAndRoomType(
@@ -59,12 +70,13 @@ public class ReservationServiceImplementation implements ReservationService {
             throw new RuntimeException("No active rate plans found for this room type in the selected period");
         }
 
-        // ✅ verifică conflictele cu alte rezervări confirmate
-        List<Reservation> conflicts = reservationRepository.findConflictingReservations(
+        // ✅ verifică conflictele cu alte rezervări confirmate (NUMAI din același hotel)
+        List<Reservation> conflicts = reservationRepository.findConflictingReservationsByHotel(
                 new ArrayList<>(request.getRoomIds()),
                 request.getCheckInDate(),
                 request.getCheckOutDate(),
-                ReservationStatus.CONFIRMED
+                ReservationStatus.CONFIRMED,
+                sampleRoom.getHotel().getId()
         );
 
         if (!conflicts.isEmpty()) {
@@ -80,20 +92,14 @@ public class ReservationServiceImplementation implements ReservationService {
             );
         }
 
-        // 💰 calcul total corect bazat pe planurile tarifare suprapuse
+        // 💰 Calcul total corect bazat pe planurile tarifare suprapuse
         BigDecimal total = calculateTotalAmount(request.getCheckInDate(), request.getCheckOutDate(), ratePlans);
-
-        // ✅ selectează planul activ la check-in (pentru referință)
-        RatePlan activePlan = ratePlans.stream()
-                .filter(plan -> !request.getCheckInDate().isBefore(plan.getStartDate())
-                        && !request.getCheckInDate().isAfter(plan.getEndDate()))
-                .findFirst()
-                .orElse(ratePlans.get(0));
 
         // ✅ creează rezervarea
         Reservation reservation = new Reservation();
+        reservation.setHotel(sampleRoom.getHotel());
         reservation.setUser(user);
-        reservation.setRatePlan(activePlan);
+        reservation.setRatePlan(selectedPlan);
         reservation.setRooms(rooms);
         reservation.setCheckInDate(request.getCheckInDate());
         reservation.setCheckOutDate(request.getCheckOutDate());
@@ -110,19 +116,22 @@ public class ReservationServiceImplementation implements ReservationService {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new RuntimeException("Reservation not found"));
 
-        // ✅ verifică dacă există alte rezervări confirmate care se suprapun
         List<Long> roomIds = reservation.getRooms().stream()
                 .map(Room::getId)
                 .toList();
 
-        List<Reservation> conflicts = reservationRepository.findConflictingReservations(
+        Long hotelId = reservation.getRatePlan().getHotel().getId();
+
+        // ✅ verifică conflictele doar în cadrul aceluiași hotel
+        List<Reservation> conflicts = reservationRepository.findConflictingReservationsByHotel(
                 roomIds,
                 reservation.getCheckInDate(),
                 reservation.getCheckOutDate(),
-                ReservationStatus.CONFIRMED
+                ReservationStatus.CONFIRMED,
+                hotelId
         );
 
-        // eliminăm rezervarea curentă din lista conflictelor (dacă apare)
+        // eliminăm chiar rezervarea curentă din lista conflictelor (dacă apare)
         conflicts = conflicts.stream()
                 .filter(r -> !r.getId().equals(reservationId))
                 .toList();
@@ -134,6 +143,7 @@ public class ReservationServiceImplementation implements ReservationService {
                     .distinct()
                     .collect(Collectors.joining(", "));
 
+            // ❌ DOAR ARUNCĂ EROARE — fără să o marcheze CANCELLED
             throw new RuntimeException(
                     "❌ Cannot confirm reservation. Conflicts detected with other confirmed bookings for rooms: "
                             + conflictedRooms + " between "
@@ -149,13 +159,16 @@ public class ReservationServiceImplementation implements ReservationService {
         return toResponseDto(reservationRepository.save(reservation));
     }
 
-    // ✅ Anulare rezervare
+    // ✅ Anulare rezervare — eliberează camerele automat
     @Override
     public void cancelReservation(Long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new RuntimeException("Reservation not found"));
 
         reservation.setStatus(ReservationStatus.CANCELLED);
+        reservation.getRooms().forEach(room -> room.setStatus(RoomStatus.AVAILABLE));
+
+        roomRepository.saveAll(reservation.getRooms());
         reservationRepository.save(reservation);
     }
 
@@ -183,17 +196,15 @@ public class ReservationServiceImplementation implements ReservationService {
         return toResponseDto(reservation);
     }
 
-    // 💰 Calcul total al sumei pe perioada de ședere
+    // 💰 Calcul total pentru fiecare zi din perioada de ședere
     private BigDecimal calculateTotalAmount(LocalDate checkIn, LocalDate checkOut, List<RatePlan> ratePlans) {
         BigDecimal total = BigDecimal.ZERO;
 
-        // sortăm planurile în ordine cronologică
         ratePlans.sort(Comparator.comparing(RatePlan::getStartDate));
 
         for (LocalDate date = checkIn; date.isBefore(checkOut); date = date.plusDays(1)) {
             final LocalDate currentDate = date;
 
-            // căutăm planul exact care acoperă ziua curentă
             RatePlan matchingPlan = ratePlans.stream()
                     .filter(p -> (p.getStartDate().isEqual(currentDate) || p.getStartDate().isBefore(currentDate))
                             && (p.getEndDate().isEqual(currentDate) || p.getEndDate().isAfter(currentDate)))
@@ -206,7 +217,7 @@ public class ReservationServiceImplementation implements ReservationService {
         return total;
     }
 
-    // 🔁 Conversie Reservation -> DTO
+    // 🔁 Conversie Reservation → DTO
     private ReservationResponseDto toResponseDto(Reservation reservation) {
         ReservationResponseDto dto = new ReservationResponseDto();
         dto.setReservationId(reservation.getId());

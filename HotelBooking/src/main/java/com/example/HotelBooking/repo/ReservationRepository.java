@@ -19,12 +19,14 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     JOIN r.rooms room
     WHERE room.id IN :roomIds
       AND r.status = :status
+      AND r.ratePlan.hotel.id = :hotelId
       AND (r.checkInDate <= :checkOut AND r.checkOutDate >= :checkIn)
 """)
-    List<Reservation> findConflictingReservations(
+    List<Reservation> findConflictingReservationsByHotel(
             @Param("roomIds") List<Long> roomIds,
             @Param("checkIn") LocalDate checkIn,
             @Param("checkOut") LocalDate checkOut,
-            @Param("status") ReservationStatus status
+            @Param("status") ReservationStatus status,
+            @Param("hotelId") Long hotelId
     );
 }

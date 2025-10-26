@@ -63,7 +63,7 @@ class ReservationServiceImplementationTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(ratePlanRepository.findById(1L)).thenReturn(Optional.of(ratePlan));
         when(roomRepository.findAllById(anyList())).thenReturn(List.of(room));
-        when(reservationRepository.findConflictingReservations(anyList(), any(), any(), any()))
+        when(reservationRepository.findConflictingReservationsByHotel(anyList(), any(), any(), any(), any()))
                 .thenReturn(Collections.emptyList());
 
         Reservation saved = new Reservation();
@@ -89,7 +89,7 @@ class ReservationServiceImplementationTest {
         when(ratePlanRepository.findById(1L)).thenReturn(Optional.of(ratePlan));
         when(roomRepository.findAllById(anyList())).thenReturn(List.of(room));
 
-        when(reservationRepository.findConflictingReservations(anyList(), any(), any(), any()))
+        when(reservationRepository.findConflictingReservationsByHotel(anyList(), any(), any(), any(), any()))
                 .thenReturn(List.of(new Reservation())); // simulate conflict
 
         RuntimeException ex = assertThrows(RuntimeException.class,
