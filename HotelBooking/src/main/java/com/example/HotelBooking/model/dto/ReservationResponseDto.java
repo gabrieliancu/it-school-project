@@ -12,7 +12,7 @@ import java.util.Map;
 public class ReservationResponseDto {
     private Long reservationId;
     private String status;
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
     private BigDecimal totalAmount;
     private LocalDate checkInDate;
     private LocalDate checkOutDate;

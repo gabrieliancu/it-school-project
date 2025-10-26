@@ -5,26 +5,26 @@ import com.example.HotelBooking.model.enums.ReservationStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
+import static com.example.HotelBooking.model.enums.ReservationStatus.CONFIRMED;
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.List;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
     List<Reservation> findByUserId(Long userId);
 
+    // ✅ verifică conflicte (camere deja rezervate în interval)
     @Query("""
-        select distinct r from Reservation r
-        join r.rooms room
-        where room.id in :roomIds
-          and r.status = com.example.HotelBooking.model.enums.ReservationStatus.CONFIRMED
-          and (
-              (r.checkInDate <= :checkOut and r.checkOutDate >= :checkIn)
-          )
-    """)
+    SELECT DISTINCT r FROM Reservation r
+    JOIN r.rooms room
+    WHERE room.id IN :roomIds
+      AND r.status = :status
+      AND (r.checkInDate <= :checkOut AND r.checkOutDate >= :checkIn)
+""")
     List<Reservation> findConflictingReservations(
-            @Param("roomIds") Collection<Long> roomIds,
+            @Param("roomIds") List<Long> roomIds,
             @Param("checkIn") LocalDate checkIn,
-            @Param("checkOut") LocalDate checkOut);
+            @Param("checkOut") LocalDate checkOut,
+            @Param("status") ReservationStatus status
+    );
 }

@@ -43,5 +43,5 @@ public class Reservation {
     private Set<Room> rooms = new HashSet<>();
 
     private ReservationStatus status = ReservationStatus.ONHOLD;
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 }

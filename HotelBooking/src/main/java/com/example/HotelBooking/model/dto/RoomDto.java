@@ -9,4 +9,5 @@ private RoomStatus status;
     private String roomNumber;
     private String floor;
     private Long hotelId;
+    private Long roomTypeId;
 }

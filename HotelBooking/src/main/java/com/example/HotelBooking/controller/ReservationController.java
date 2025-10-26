@@ -14,49 +14,48 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/reservations")
 public class ReservationController {
 
     @Autowired
-    ReservationService reservationService;
+    private ReservationService reservationService;
 
-    // ✅ POST – Creare rezervare nouă (stare inițială ONHOLD)
+    // ✅ POST - Creare rezervare
     @PostMapping
     public ResponseEntity<ReservationResponseDto> createReservation(@RequestBody ReservationRequestDto request) {
         return ResponseEntity.ok(reservationService.createReservation(request));
     }
 
-    // ✅ POST – Confirmare rezervare existentă
+    // ✅ POST - Confirmare rezervare
     @PostMapping("/confirm/{id}")
-    public ResponseEntity<ReservationResponseDto> confirm(@PathVariable Long id) {
+    public ResponseEntity<ReservationResponseDto> confirmReservation(@PathVariable Long id) {
         return ResponseEntity.ok(reservationService.confirmReservation(id));
     }
 
-    // ✅ POST – Anulare rezervare existentă
-    @PostMapping("/cancel/{id}")
-    public ResponseEntity<Void> cancel(@PathVariable Long id) {
+    // ✅ DELETE - Anulare rezervare
+    @DeleteMapping("/cancel/{id}")
+    public ResponseEntity<Void> cancelReservation(@PathVariable Long id) {
         reservationService.cancelReservation(id);
         return ResponseEntity.noContent().build();
     }
 
-    // ✅ GET – Listare toate rezervările (pentru admin)
+    // ✅ GET - Toate rezervările
     @GetMapping
-    public ResponseEntity<List<ReservationResponseDto>> getAll() {
+    public ResponseEntity<List<ReservationResponseDto>> getAllReservations() {
         return ResponseEntity.ok(reservationService.findAllReservations());
     }
 
-    // ✅ GET – Rezervările unui anumit utilizator
+    // ✅ GET - Rezervările unui utilizator
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<ReservationResponseDto>> getByUser(@PathVariable Long userId) {
+    public ResponseEntity<List<ReservationResponseDto>> getReservationsByUser(@PathVariable Long userId) {
         return ResponseEntity.ok(reservationService.findReservationsByUser(userId));
     }
 
-    // ✅ GET – Detalii despre 0 rezervare specifică
+    // ✅ GET - O rezervare după ID
     @GetMapping("/{id}")
-    public ResponseEntity<ReservationResponseDto> getById(@PathVariable Long id) {
+    public ResponseEntity<ReservationResponseDto> getReservationById(@PathVariable Long id) {
         return ResponseEntity.ok(reservationService.findById(id));
     }
 }
