@@ -168,7 +168,7 @@ public class ReservationServiceImplementation implements ReservationService {
             );
         }
 
-        //  dacă nu există conflicte → confirmă rezervarea
+        //  dacă nu există conflicte - confirmă rezervarea
         reservation.setStatus(ReservationStatus.CONFIRMED);
         reservation.getRooms().forEach(room -> room.setStatus(RoomStatus.BOOKED));
         roomRepository.saveAll(reservation.getRooms());
@@ -226,7 +226,7 @@ public class ReservationServiceImplementation implements ReservationService {
                     .filter(p -> (p.getStartDate().isEqual(currentDate) || p.getStartDate().isBefore(currentDate))
                             && (p.getEndDate().isEqual(currentDate) || p.getEndDate().isAfter(currentDate)))
                     .findFirst()
-                    .orElseThrow(() -> new RuntimeException("⚠ No rate plan found for date: " + currentDate));
+                    .orElseThrow(() -> new RuntimeException(" No rate plan found for date: " + currentDate));
 
             total = total.add(matchingPlan.getPricePerNight());
         }
@@ -234,7 +234,7 @@ public class ReservationServiceImplementation implements ReservationService {
         return total;
     }
 
-    //  Conversie Reservation → DTO
+    //  Conversie Reservation - DTO
     private ReservationResponseDto toResponseDto(Reservation reservation) {
         ReservationResponseDto dto = new ReservationResponseDto();
         dto.setReservationId(reservation.getId());

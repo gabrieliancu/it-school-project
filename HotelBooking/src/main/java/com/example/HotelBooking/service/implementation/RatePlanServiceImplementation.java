@@ -60,43 +60,43 @@ public class RatePlanServiceImplementation implements RatePlanService {
         return ratePlanRepository.save(ratePlan);
     }
 
-    // 🔹 Returnează toate planurile
+    //  Returnează toate planurile
     @Override
     public List<RatePlan> findAllRatePlans() {
         return ratePlanRepository.findAll();
     }
 
-    // 🔹 Căutare după ID
+    //  Căutare după ID
     @Override
     public Optional<RatePlan> findRatePlanById(Long id) {
         return ratePlanRepository.findById(id);
     }
 
-    // 🔹 Căutare după hotel
+    //  Căutare după hotel
     @Override
     public List<RatePlan> findRatePlansByHotel(Long hotelId) {
         return ratePlanRepository.findByHotelId(hotelId);
     }
 
-    // 🔹 Căutare după tip cameră
+    //  Căutare după tip cameră
     @Override
     public List<RatePlan> findRatePlansByRoomType(Long roomTypeId) {
         return ratePlanRepository.findByRoomTypeId(roomTypeId);
     }
 
-    // 🔹 Planuri active între două date (toate hotelurile / tipurile)
+    //  Planuri active între două date (toate hotelurile / tipurile)
     @Override
     public List<RatePlan> findActiveRatePlans(LocalDate start, LocalDate end) {
         return ratePlanRepository.findActiveRatePlans(start, end);
     }
 
-    // 🔹 Planuri active pentru un hotel și tip de cameră
+    //  Planuri active pentru un hotel și tip de cameră
     public List<RatePlan> findActiveRatePlansByHotelAndRoomType(Long hotelId, Long roomTypeId,
                                                                 LocalDate start, LocalDate end) {
         return ratePlanRepository.findActiveRatePlansByHotelAndRoomType(hotelId, roomTypeId, start, end);
     }
 
-    // 🔹 Actualizare plan tarifar
+    //  Actualizare plan tarifar
     @Override
     public RatePlan updateRatePlan(Long id, RatePlanDto dto) {
         RatePlan ratePlan = ratePlanRepository.findById(id)
@@ -119,7 +119,7 @@ public class RatePlanServiceImplementation implements RatePlanService {
         return ratePlanRepository.save(ratePlan);
     }
 
-    // 🔹 Ștergere plan tarifar
+    //  Ștergere plan tarifar
     @Override
     public void deleteRatePlan(Long id) {
         if (!ratePlanRepository.existsById(id)) {
