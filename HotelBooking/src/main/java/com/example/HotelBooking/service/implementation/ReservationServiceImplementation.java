@@ -41,27 +41,42 @@ public class ReservationServiceImplementation implements ReservationService {
             throw new RuntimeException("No rooms selected");
         }
 
-        Room sampleRoom = rooms.iterator().next();
-
         // ✅ verifică planul tarifar (ratePlanId)
         RatePlan selectedPlan = ratePlanRepository.findById(request.getRatePlanId())
                 .orElseThrow(() -> new RuntimeException("Invalid rate plan ID: " + request.getRatePlanId()));
 
-        // 🔒 Verifică dacă planul tarifar aparține aceluiași hotel și tip de cameră
-        if (!selectedPlan.getHotel().getId().equals(sampleRoom.getHotel().getId())) {
-            throw new RuntimeException("❌ Rate plan belongs to another hotel ("
-                    + selectedPlan.getHotel().getName() + ")");
+        // ✅ Verifică dacă toate camerele sunt din același hotel
+        Long hotelId = rooms.iterator().next().getHotel().getId();
+        boolean allSameHotel = rooms.stream()
+                .allMatch(r -> r.getHotel().getId().equals(hotelId));
+        if (!allSameHotel) {
+            throw new RuntimeException("❌ All selected rooms must belong to the same hotel");
         }
 
-        if (!selectedPlan.getRoomType().getId().equals(sampleRoom.getRoomType().getId())) {
-            throw new RuntimeException("❌ Rate plan does not match the selected room type ("
-                    + selectedPlan.getRoomType().getName() + ")");
+        // ✅ Verifică dacă toate camerele sunt de același tip (RoomType)
+        Long roomTypeId = rooms.iterator().next().getRoomType().getId();
+        boolean allSameType = rooms.stream()
+                .allMatch(r -> r.getRoomType().getId().equals(roomTypeId));
+        if (!allSameType) {
+            throw new RuntimeException("❌ All selected rooms must have the same room type");
+        }
+
+        // ✅ Verifică dacă planul tarifar aparține aceluiași hotel
+        if (!selectedPlan.getHotel().getId().equals(hotelId)) {
+            throw new RuntimeException("❌ Rate plan belongs to another hotel (" +
+                    selectedPlan.getHotel().getName() + ")");
+        }
+
+        // ✅ Verifică dacă planul tarifar corespunde tipului de cameră
+        if (!selectedPlan.getRoomType().getId().equals(roomTypeId)) {
+            throw new RuntimeException("❌ Rate plan does not match the selected room type (" +
+                    selectedPlan.getRoomType().getName() + ")");
         }
 
         // ✅ obține doar planurile active pentru perioada cerută
         List<RatePlan> ratePlans = ratePlanRepository.findActiveRatePlansByHotelAndRoomType(
-                sampleRoom.getHotel().getId(),
-                sampleRoom.getRoomType().getId(),
+                hotelId,
+                roomTypeId,
                 request.getCheckInDate(),
                 request.getCheckOutDate()
         );
@@ -76,7 +91,7 @@ public class ReservationServiceImplementation implements ReservationService {
                 request.getCheckInDate(),
                 request.getCheckOutDate(),
                 ReservationStatus.CONFIRMED,
-                sampleRoom.getHotel().getId()
+                hotelId
         );
 
         if (!conflicts.isEmpty()) {
@@ -97,7 +112,7 @@ public class ReservationServiceImplementation implements ReservationService {
 
         // ✅ creează rezervarea
         Reservation reservation = new Reservation();
-        reservation.setHotel(sampleRoom.getHotel());
+        reservation.setHotel(rooms.iterator().next().getHotel());
         reservation.setUser(user);
         reservation.setRatePlan(selectedPlan);
         reservation.setRooms(rooms);
@@ -109,6 +124,8 @@ public class ReservationServiceImplementation implements ReservationService {
 
         return toResponseDto(reservationRepository.save(reservation));
     }
+
+
 
     // ✅ Confirmare rezervare
     @Override
