@@ -146,7 +146,7 @@ Vezi apoi: `GET /api/rooms/{Id}`
   "ratePlanId": 1,
   "userId": 1,
   "roomIds": [
-    1,4
+    4
   ],
   "checkInDate": "2026-06-15",
   "checkOutDate": "2026-06-26"
