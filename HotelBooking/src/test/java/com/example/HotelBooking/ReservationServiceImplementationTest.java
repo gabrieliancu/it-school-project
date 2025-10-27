@@ -58,13 +58,13 @@ class ReservationServiceImplementationTest {
         room = new Room();
         room.setId(1L);
         room.setHotel(hotel);
-        room.setRoomType(roomType); // ✅ Adaugă această linie!
+        room.setRoomType(roomType);
         room.setStatus(RoomStatus.AVAILABLE);
 
         ratePlan = new RatePlan();
         ratePlan.setId(1L);
         ratePlan.setHotel(hotel);
-        ratePlan.setRoomType(roomType); // ✅ Și aici!
+        ratePlan.setRoomType(roomType);
         ratePlan.setStartDate(LocalDate.of(2025, 10, 20));
         ratePlan.setEndDate(LocalDate.of(2025, 10, 30));
         ratePlan.setPricePerNight(BigDecimal.valueOf(100));

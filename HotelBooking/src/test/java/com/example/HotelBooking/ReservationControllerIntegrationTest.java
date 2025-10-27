@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@ActiveProfiles("test")  // 👈 spune Spring să folosească application-test.properties
+@ActiveProfiles("test")  // spune Spring să folosească application-test.properties
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 class ReservationControllerIntegrationTest {
@@ -70,33 +70,33 @@ class ReservationControllerIntegrationTest {
         hotelRepository.deleteAll();
         roomTypeRepository.deleteAll();
 
-        // ✅ Hotel
+        //  Hotel
         hotel = new Hotel();
         hotel.setName("Inter");
         hotel.setLocation("București");
         hotel.setRating(5.0);
         hotelRepository.save(hotel);
 
-        // ✅ User
+        //  User
         user = new User();
         user.setName("Test User");
         userRepository.save(user);
 
-        // ✅ RoomType
+        //  RoomType
         type = new RoomType();
         type.setName("Double");
         type.setDescription("2 persoane");
         type.setCapacity(2);
         roomTypeRepository.save(type);
 
-        // ✅ Room
+        //  Room
         room = new Room();
         room.setHotel(hotel);
         room.setRoomType(type);
         room.setRoomNumber("101");
         roomRepository.save(room);
 
-        // ✅ RatePlan
+        //  RatePlan
         ratePlan = new RatePlan();
         ratePlan.setHotel(hotel);
         ratePlan.setRoomType(type);
@@ -106,7 +106,7 @@ class ReservationControllerIntegrationTest {
         ratePlanRepository.save(ratePlan);
     }
 
-    // ✅ Test principal — creare rezervare validă
+    //  Test principal — creare rezervare validă
     @Test
     void whenCreateValidReservation_thenReturnOkAndSaveToDatabase() throws Exception {
         ReservationRequestDto dto = new ReservationRequestDto();
@@ -121,17 +121,17 @@ class ReservationControllerIntegrationTest {
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(ReservationStatus.ONHOLD.name()))
-                .andExpect(jsonPath("$.totalAmount").value(200.00)); // ✅ JSON tolerant la .00
+                .andExpect(jsonPath("$.totalAmount").value(200.00)); //  JSON tolerant la .00
 
-        // ✅ Verificare în baza de date
+        //  Verificare în baza de date
         Reservation saved = reservationRepository.findAll().get(0);
         assertEquals(ReservationStatus.ONHOLD, saved.getStatus());
-        assertEquals(0, saved.getTotalAmount().compareTo(BigDecimal.valueOf(200))); // ✅ tolerant la scale
+        assertEquals(0, saved.getTotalAmount().compareTo(BigDecimal.valueOf(200))); //  tolerant la scale
         assertEquals(hotel.getId(), saved.getHotel().getId());
         assertEquals(user.getId(), saved.getUser().getId());
     }
 
-    // ❌ Test negativ — plan tarifar din alt hotel
+    //  Test negativ — plan tarifar din alt hotel
     @Test
     void whenCreateReservationWithInvalidRatePlan_thenReturnError() throws Exception {
         // alt hotel
