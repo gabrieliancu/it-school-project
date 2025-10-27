@@ -13,7 +13,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     List<Reservation> findByUserId(Long userId);
 
-    // ✅ verifică conflicte (camere deja rezervate în interval)
+    // verifică conflicte (camere deja rezervate în interval)
     @Query("""
     SELECT DISTINCT r FROM Reservation r
     JOIN r.rooms room

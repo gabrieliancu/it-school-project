@@ -22,38 +22,38 @@ public class ReservationController {
     @Autowired
     private ReservationService reservationService;
 
-    // ✅ POST - Creare rezervare
+    //  POST - Creare rezervare
     @PostMapping
     public ResponseEntity<ReservationResponseDto> createReservation(@RequestBody ReservationRequestDto request) {
         return ResponseEntity.ok(reservationService.createReservation(request));
     }
 
-    // ✅ POST - Confirmare rezervare
+    //  POST - Confirmare rezervare
     @PostMapping("/confirm/{id}")
     public ResponseEntity<ReservationResponseDto> confirmReservation(@PathVariable Long id) {
         return ResponseEntity.ok(reservationService.confirmReservation(id));
     }
 
-    // ✅ DELETE - Anulare rezervare
+    //  DELETE - Anulare rezervare
     @DeleteMapping("/cancel/{id}")
     public ResponseEntity<Void> cancelReservation(@PathVariable Long id) {
         reservationService.cancelReservation(id);
         return ResponseEntity.noContent().build();
     }
 
-    // ✅ GET - Toate rezervările
+    //  GET - Toate rezervările
     @GetMapping
     public ResponseEntity<List<ReservationResponseDto>> getAllReservations() {
         return ResponseEntity.ok(reservationService.findAllReservations());
     }
 
-    // ✅ GET - Rezervările unui utilizator
+    //  GET - Rezervările unui utilizator
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<ReservationResponseDto>> getReservationsByUser(@PathVariable Long userId) {
         return ResponseEntity.ok(reservationService.findReservationsByUser(userId));
     }
 
-    // ✅ GET - O rezervare după ID
+    //  GET - O rezervare după ID
     @GetMapping("/{id}")
     public ResponseEntity<ReservationResponseDto> getReservationById(@PathVariable Long id) {
         return ResponseEntity.ok(reservationService.findById(id));

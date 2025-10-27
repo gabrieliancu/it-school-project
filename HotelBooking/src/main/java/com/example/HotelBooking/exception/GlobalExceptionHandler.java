@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
                 request.getRequestURI()
         );
 
-        log.warn("⚠️ [{}] {} -> {}", status.value(), request.getRequestURI(), ex.getMessage());
+        log.warn(" [{}] {} -> {}", status.value(), request.getRequestURI(), ex.getMessage());
 
         return ResponseEntity.status(status).body(errorResponse);
     }
@@ -57,7 +57,7 @@ public class GlobalExceptionHandler {
                 request.getRequestURI()
         );
 
-        log.error("❌ [500] {} -> {}", request.getRequestURI(), ex.getMessage());
+        log.error(" [500] {} -> {}", request.getRequestURI(), ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }

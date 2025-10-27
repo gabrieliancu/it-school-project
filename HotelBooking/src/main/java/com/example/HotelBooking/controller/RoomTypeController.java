@@ -16,13 +16,13 @@ public class RoomTypeController {
     @Autowired
     RoomTypeService roomTypeService;
 
-    // ✅ GET - toate tipurile de camere
+    //  GET - toate tipurile de camere
     @GetMapping
     public ResponseEntity<List<RoomType>> getAllRoomTypes() {
         return ResponseEntity.ok(roomTypeService.findAllRoomTypes());
     }
 
-    // ✅ GET - tip de cameră după ID
+    //  GET - tip de cameră după ID
     @GetMapping("/{id}")
     public ResponseEntity<RoomType> getRoomTypeById(@PathVariable Long id) {
         return roomTypeService.findById(id)
@@ -30,7 +30,7 @@ public class RoomTypeController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // ✅ GET - tip de cameră după nume
+    //  GET - tip de cameră după nume
     @GetMapping("/name/{name}")
     public ResponseEntity<RoomType> getRoomTypeByName(@PathVariable String name) {
         return roomTypeService.findByName(name)
@@ -38,25 +38,25 @@ public class RoomTypeController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // ✅ GET - tipuri de camere cu capacitate minimă
+    //  GET - tipuri de camere cu capacitate minimă
     @GetMapping("/capacity/{minCapacity}")
     public ResponseEntity<List<RoomType>> getRoomTypesByCapacity(@PathVariable int minCapacity) {
         return ResponseEntity.ok(roomTypeService.findByCapacity(minCapacity));
     }
 
-    // ✅ POST - adăugare nou tip de cameră
+    //  POST - adăugare nou tip de cameră
     @PostMapping
     public ResponseEntity<RoomType> createRoomType(@RequestBody RoomTypeDto dto) {
         return ResponseEntity.ok(roomTypeService.createRoomType(dto));
     }
 
-    // ✅ PUT - actualizare tip cameră
+    //  PUT - actualizare tip cameră
     @PutMapping("/{id}")
     public ResponseEntity<RoomType> updateRoomType(@PathVariable Long id, @RequestBody RoomTypeDto dto) {
         return ResponseEntity.ok(roomTypeService.updateRoomType(id, dto));
     }
 
-    // ✅ DELETE - ștergere tip cameră
+    //  DELETE - ștergere tip cameră
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteRoomType(@PathVariable Long id) {
         roomTypeService.deleteRoomType(id);

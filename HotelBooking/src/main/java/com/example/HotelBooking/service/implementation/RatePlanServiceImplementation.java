@@ -27,18 +27,18 @@ public class RatePlanServiceImplementation implements RatePlanService {
     @Autowired
     private RoomTypeRepository roomTypeRepository;
 
-    // 🔹 Creare plan tarifar nou
+    // Creare plan tarifar nou
     @Override
     public RatePlan createRatePlan(RatePlanDto dto) {
         Hotel hotel = hotelRepository.findById(dto.getHotelId())
                 .orElseThrow(() ->
-                        new EntityNotFoundException("❌ Hotel with ID " + dto.getHotelId() + " not found."));
+                        new EntityNotFoundException("Hotel with ID " + dto.getHotelId() + " not found."));
 
         RoomType roomType = roomTypeRepository.findById(dto.getRoomTypeId())
                 .orElseThrow(() ->
-                        new EntityNotFoundException("❌ RoomType with ID " + dto.getRoomTypeId() + " not found."));
+                        new EntityNotFoundException("RoomType with ID " + dto.getRoomTypeId() + " not found."));
 
-        // 🧠 validare logică de suprapunere
+        // validare logică de suprapunere
         List<RatePlan> overlappingPlans = ratePlanRepository.findActiveRatePlansByHotelAndRoomType(
                 hotel.getId(),
                 roomType.getId(),
@@ -46,7 +46,7 @@ public class RatePlanServiceImplementation implements RatePlanService {
                 dto.getEndDate()
         );
         if (!overlappingPlans.isEmpty()) {
-            throw new IllegalArgumentException("⚠️ There is already a rate plan overlapping with the given period!");
+            throw new IllegalArgumentException("️ There is already a rate plan overlapping with the given period!");
         }
 
         RatePlan ratePlan = new RatePlan();
@@ -100,7 +100,7 @@ public class RatePlanServiceImplementation implements RatePlanService {
     @Override
     public RatePlan updateRatePlan(Long id, RatePlanDto dto) {
         RatePlan ratePlan = ratePlanRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("❌ RatePlan with ID " + id + " not found."));
+                .orElseThrow(() -> new EntityNotFoundException(" RatePlan with ID " + id + " not found."));
 
         if (dto.getPricePerNight() != null)
             ratePlan.setPricePerNight(dto.getPricePerNight());
@@ -113,7 +113,7 @@ public class RatePlanServiceImplementation implements RatePlanService {
 
         // (opțional) validare logică: startDate <= endDate
         if (ratePlan.getStartDate().isAfter(ratePlan.getEndDate())) {
-            throw new IllegalArgumentException("❌ Start date cannot be after end date.");
+            throw new IllegalArgumentException(" Start date cannot be after end date.");
         }
 
         return ratePlanRepository.save(ratePlan);
@@ -123,7 +123,7 @@ public class RatePlanServiceImplementation implements RatePlanService {
     @Override
     public void deleteRatePlan(Long id) {
         if (!ratePlanRepository.existsById(id)) {
-            throw new EntityNotFoundException("❌ RatePlan with ID " + id + " not found.");
+            throw new EntityNotFoundException(" RatePlan with ID " + id + " not found.");
         }
         ratePlanRepository.deleteById(id);
     }

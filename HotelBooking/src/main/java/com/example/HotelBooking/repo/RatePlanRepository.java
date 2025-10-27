@@ -9,13 +9,13 @@ import java.util.List;
 
 public interface RatePlanRepository extends JpaRepository<RatePlan, Long> {
 
-    // 🔹 Toate planurile unui hotel
+    //  Toate planurile unui hotel
     List<RatePlan> findByHotelId(Long hotelId);
 
-    // 🔹 Toate planurile pentru un anumit tip de cameră
+    //  Toate planurile pentru un anumit tip de cameră
     List<RatePlan> findByRoomTypeId(Long roomTypeId);
 
-    // 🔹 Planuri care se suprapun cu perioada cerută (suprapuneri parțiale sau totale)
+    //  Planuri care se suprapun cu perioada cerută (suprapuneri parțiale sau totale)
     @Query("""
         SELECT r FROM RatePlan r
         WHERE r.endDate >= :start
@@ -24,7 +24,7 @@ public interface RatePlanRepository extends JpaRepository<RatePlan, Long> {
     List<RatePlan> findActiveRatePlans(@Param("start") LocalDate start,
                                        @Param("end") LocalDate end);
 
-    // 🔹 Planuri active pentru un hotel și un tip de cameră specific
+    //  Planuri active pentru un hotel și un tip de cameră specific
     @Query("""
         SELECT r FROM RatePlan r
         WHERE r.hotel.id = :hotelId
@@ -40,7 +40,7 @@ public interface RatePlanRepository extends JpaRepository<RatePlan, Long> {
             @Param("end") LocalDate end
     );
 
-    // 🔹 Toate planurile pentru un hotel și un tip de cameră (fără filtrare pe perioadă)
+    //  Toate planurile pentru un hotel și un tip de cameră (fără filtrare pe perioadă)
     @Query("""
         SELECT r FROM RatePlan r
         WHERE r.hotel.id = :hotelId

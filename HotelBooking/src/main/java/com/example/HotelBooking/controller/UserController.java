@@ -15,13 +15,13 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    // ✅ GET - listare toți utilizatorii
+    //  GET - listare toți utilizatorii
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userService.findAllUsers());
     }
 
-    // ✅ GET - utilizator după ID
+    //  GET - utilizator după ID
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         return userService.findUserById(id)
@@ -29,7 +29,7 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // ✅ GET - căutare după email
+    //  GET - căutare după email
     @GetMapping("/email/{email}")
     public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
         return userService.findUserByEmail(email)
@@ -37,19 +37,19 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // ✅ POST - creare user nou
+    //  POST - creare user nou
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody UserDto dto) {
         return ResponseEntity.ok(userService.createUser(dto));
     }
 
-    // ✅ PUT - actualizare user
+    //  PUT - actualizare user
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody UserDto dto) {
         return ResponseEntity.ok(userService.updateUser(id, dto));
     }
 
-    // ✅ DELETE - ștergere user
+    // DELETE - ștergere user
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);

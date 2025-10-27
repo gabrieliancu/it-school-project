@@ -30,7 +30,7 @@ public class RoomServiceImplementation implements RoomService {
         this.roomTypeRepository = roomTypeRepository;
     }
 
-    // 🔹 Creare cameră nouă
+    //  Creare cameră nouă
     @Override
     public Room createRoom(RoomDto dto) {
         Hotel hotel = hotelRepository.findById(dto.getHotelId())
@@ -51,7 +51,7 @@ public class RoomServiceImplementation implements RoomService {
         return roomRepository.save(room);
     }
 
-    // 🔹 Actualizare cameră
+    //  Actualizare cameră
     @Override
     public Room updateRoom(Long id, RoomDto dto) {
         Room room = roomRepository.findById(id)
@@ -81,7 +81,7 @@ public class RoomServiceImplementation implements RoomService {
         return roomRepository.save(room);
     }
 
-    // 🔹 Ștergere cameră
+    //  Ștergere cameră
     @Override
     public void deleteRoom(Long id) {
         if (!roomRepository.existsById(id)) {
@@ -90,20 +90,20 @@ public class RoomServiceImplementation implements RoomService {
         roomRepository.deleteById(id);
     }
 
-    // 🔹 Toate camerele
+    //  Toate camerele
     @Override
     public List<Room> findAllRooms() {
         return roomRepository.findAll();
     }
 
-    // 🔹 Căutare cameră după ID
+    //  Căutare cameră după ID
     @Override
     public Room findRoomById(Long id) {
         return roomRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Room with ID " + id + " not found"));
     }
 
-    // 🔹 Toate camerele dintr-un hotel
+    //  Toate camerele dintr-un hotel
     @Override
     public List<Room> findRoomsByHotel(Long hotelId) {
         return roomRepository.findByHotelId(hotelId);
